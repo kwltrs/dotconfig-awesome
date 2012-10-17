@@ -5,7 +5,7 @@
 theme = {}
 
 --theme.font          = "sans 8"
-theme.font          = "sans 10"
+theme.font          = "DejaVu Sans 10"
 
 --theme.bg_normal     = "#222222"
 theme.bg_normal     = "#272e34"
