@@ -6,6 +6,8 @@ require("awful.rules")
 require("beautiful")
 -- Notification library
 require("naughty")
+local vicious = require("vicious")
+require("vicious.helpers")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -89,11 +91,42 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                   }
                         })
 
-mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
-                                     menu = mymainmenu })
+-- mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
+--                                      menu = mymainmenu })
+-- }}}
+
+-- {{{ Vicious
+-- Create battery state widget
+batwidget = widget({ type = "textbox" })
+vicious.register(batwidget, vicious.widgets.bat, " bat $1$2%", 61, "BAT0")
+
+datewidget = widget({ type = "textbox" })
+vicious.register(datewidget, vicious.widgets.date, "%b %d, %R", 60)
+
+memwidget = widget({ type = "textbox" })
+vicious.register(memwidget, vicious.widgets.mem, "mem $1%", 13)
+
+-- cpuwidget = widget({ type = "textbox" })
+-- vicious.register(cpuwidget, vicious.widgets.cpu, "cpu $1 $2 $3 $4", 13)
+
+uptimewidget = widget({ type = "textbox" })
+vicious.register(uptimewidget, vicious.widgets.uptime, "up $1 $2 $3")
+
+wifiwidget = widget({ type = "textbox" })
+vicious.register(wifiwidget, vicious.widgets.wifi, "wlan0 ${ssid} ${link}% ${rate}", 5, "wlan0")
+
+-- pcmwidget = widget({ type = "textbox" })
+-- vicious.register(pcmwidget, vicious.widgets.volume, "pcm $1%", 1, "PCM")
+-- volwidget = widget({ type = "textbox" })
+-- vicious.register(volwidget, vicious.widgets.volume, "mas $1%", 1, "Master")
+
 -- }}}
 
 -- {{{ Wibox
+spacer       = widget({ type = "textbox"  })
+spacer.text  = ' ┃ '
+
+
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
@@ -101,7 +134,7 @@ mytextclock = awful.widget.textclock({ align = "right" })
 mysystray = widget({ type = "systray" })
 
 -- Create a custom widget
-mystatusbar = widget({ type = "textbox", name = "mystatusbar" })
+-- mystatusbar = widget({ type = "textbox", name = "mystatusbar" })
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -177,10 +210,18 @@ for s = 1, screen.count() do
             mypromptbox[s],
             layout = awful.widget.layout.horizontal.leftright
         },
-        mylayoutbox[s],
-        mystatusbar,
-	mytextclock,
+        -- mylayoutbox[s],
+        -- mystatusbar,
+	-- mytextclock,
+	datewidget,    spacer,
+	uptimewidget,  spacer,
+	-- pcmwidget, volwidget, spacer,
+	-- cpuwidget,     spacer,
+	memwidget,     spacer,
+	wifiwidget,    spacer,
+	batwidget,
         s == 1 and mysystray or nil,
+        mylayoutbox[s],
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
@@ -341,6 +382,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
+    { rule = { class = "Firefox" },
+      properties = { floating = false } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
@@ -377,3 +420,5 @@ end)
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- vim:fdm=marker
